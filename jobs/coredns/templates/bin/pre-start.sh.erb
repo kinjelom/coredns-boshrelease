@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# create additional-config root-dir
+ROOT_DIR="<%= p('coredns.config.external.directory','/var/vcap/jobs/coredns/conf/external') %>"
+/bin/mkdir -p $ROOT_DIR
+
+# files:
+<%
+  p("coredns.config.external.files",[]).each do |acf|
+%>
+# <%=acf["name"]%>
+<% if !acf["yaml"].to_s.empty? %>
+/bin/cat > $ROOT_DIR/<%=acf["name"]%> << 'EOF'
+<%=acf["yaml"].to_yaml.gsub(/---/, '') %>
+EOF
+<% else %>
+/bin/cat > $ROOT_DIR/<%=acf["name"]%> << 'EOF'
+<%=acf["text"] %>
+EOF
+<% end %>
+
+<% end %>

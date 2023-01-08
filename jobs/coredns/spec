@@ -1,0 +1,62 @@
+---
+name: coredns
+
+templates:
+  bin/pre-start.sh.erb: bin/pre-start
+  bin/coredns_ctl.erb: bin/coredns_ctl
+  conf/Corefile.erb: conf/Corefile
+
+packages:
+- coredns
+
+properties:
+  coredns.dns-port:
+    description: "DNS main port (used as health-check)"
+    default: "1053"
+  coredns.v:
+    description: "log level for V logs"
+  coredns.vmodule:
+    description: "comma-separated list of pattern=N settings for file-filtered logging"
+
+  coredns.env:
+    description: "Enviroment variables"
+    default:
+      - name: PROMETHEUS_PORT
+        value: 9153
+
+  coredns.config.main.path:
+    description: "Corefile path to load"
+    default: "/var/vcap/jobs/coredns/conf/Corefile"
+  coredns.config.main.blocks:
+    description: "Corefile content named blocks"
+    default:
+    - |+
+      . {
+          prometheus 0.0.0.0:{$PROMETHEUS_PORT}
+          log
+          errors
+        }
+
+  coredns.config.external.directory:
+    description: "External config dir to create"
+    default: "/var/vcap/jobs/coredns/conf/external"
+  coredns.config.external.files:
+    description: "External config files to create"
+    default: []
+    example:
+    - name: test.example.org.yaml
+      yaml:
+        key: value
+    - name: test.example.org
+      text: |+
+        $ORIGIN test.example.org.
+        @ 3600 IN SOA sns.dns.icann.org. noc.dns.icann.org. (
+            2017042745 ; serial
+            7200       ; refresh (2 hours)
+            3600       ; retry (1 hour)
+            1209600    ; expire (2 weeks)
+            3600       ; minimum (1 hour)
+          )
+          3600 IN NS a.iana-servers.net.
+          3600 IN NS b.iana-servers.net.
+          local IN A 127.0.0.1

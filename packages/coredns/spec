@@ -1,0 +1,9 @@
+---
+name: coredns
+
+dependencies:
+- golang-1.19-linux
+
+files:
+- common/utils.sh
+- coredns/coredns-1.10.0.src.tar.gz

@@ -1,0 +1,45 @@
+---
+name: ((deployment_name))
+
+instance_groups:
+- name: coredns
+  azs: [z1, z2, z3]
+  instances: 1
+  vm_type: default
+  stemcell: default
+  networks: [name: default]
+  jobs:
+  - name: coredns
+    release: coredns
+    properties:
+      coredns:
+        dns-port: 1053
+        env:
+        - name: PROMETHEUS_PORT
+          value: 9153
+        config:
+          main:
+            path: "/var/vcap/jobs/coredns/conf/Corefile"
+            blocks:
+            - |+
+              . {
+                prometheus 0.0.0.0:{$PROMETHEUS_PORT}
+                log
+                errors
+              }
+
+releases:
+- name: coredns
+  version: latest
+
+stemcells:
+- alias: default
+  os: ubuntu-jammy
+  version: latest
+
+update:
+  canaries: 1
+  canary_watch_time: 30000-1200000
+  max_in_flight: 1
+  serial: false
+  update_watch_time: 5000-1200000

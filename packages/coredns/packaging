@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+set -eux
+
+# Copy common utils
+mkdir -p ${BOSH_INSTALL_TARGET}/common
+cp -a ${BOSH_COMPILE_TARGET}/common/* ${BOSH_INSTALL_TARGET}/common
+
+# Extract coredns source
+tar xzvf ${BOSH_COMPILE_TARGET}/coredns/coredns-1.10.0.src.tar.gz
+
+source /var/vcap/packages/golang-*-linux/bosh/compile.env
+mkdir -p ${BOSH_INSTALL_TARGET}/bin
+export GOBIN=${BOSH_INSTALL_TARGET}/bin
+
+pushd coredns-1.10.0
+
+  # Add external plugins
+  go get github.com/kinjelom/coredns-recursor@v1.0.0
+  echo -e "recursor:github.com/kinjelom/coredns-recursor" >> plugin.cfg
+
+  # Build
+  go generate
+  go build
+  ./coredns -plugins
+
+
+  # Copy coredns binary
+  mv ./coredns ${BOSH_INSTALL_TARGET}/bin
+  chmod +x ${BOSH_INSTALL_TARGET}/bin/coredns
+popd
+

@@ -1,0 +1,43 @@
+---
+
+- type: replace
+  path: /instance_groups/name=coredns/jobs/name=coredns/properties?/coredns?/config?/main?/blocks?/-
+  value: |+
+    demo.svc. {
+      recursor {
+        external-yaml /var/vcap/jobs/coredns/conf/external/demo.svc.yaml
+        verbose 1
+      }
+      log
+      errors
+    }
+
+- type: replace
+  path: /instance_groups/name=coredns/jobs/name=coredns/properties?/coredns?/config?/external?/files?/-
+  value:
+    name: demo.svc.yaml
+    yaml:
+        zone: demo.svc
+        resolvers:
+          dns-c:
+            urls: [ udp://1.1.1.1:53, udp://1.0.0.1:53 ]
+            timeout_ms: 500
+          dns-g:
+            urls: [ udp://8.8.8.8:53, udp://8.8.4.4:53 ]
+        aliases:
+          alias1:
+            hosts: [ www.example.org, www.example.com ]
+            resolver_name: dns-c
+            ttl: 11
+          alias2:
+            ips: [ 10.0.0.1, 10.0.0.2 ]
+            ttl: 12
+          alias3:
+            ips: [ 10.0.0.1, 10.0.0.2 ]
+            hosts: [ www.example.net ]
+            resolver_name: dns-g
+            ttl: 13
+          alias4:
+            hosts: [ www.example.net ]
+            ttl: 14
+

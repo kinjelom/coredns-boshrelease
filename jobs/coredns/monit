@@ -1,0 +1,11 @@
+check process coredns
+  with pidfile /var/vcap/sys/run/coredns/coredns.pid
+  start program "/var/vcap/jobs/coredns/bin/coredns_ctl start"
+  stop program "/var/vcap/jobs/coredns/bin/coredns_ctl stop"
+  group vcap
+  # if failed port <%= p("coredns.dns-port","") %> protocol DNS then restart
+
+# monit 5.2.5 https://gist.github.com/oppegard/46dfa1e40b46aff1fa73c81b10341cab
+
+
+
