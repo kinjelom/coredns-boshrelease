@@ -3,8 +3,8 @@ name: ((deployment_name))
 
 instance_groups:
 - name: coredns
-  azs: [z1, z2, z3]
-  instances: 1
+  azs: ((azs))
+  instances: ((instances))
   vm_type: default
   stemcell: default
   networks: [name: default]

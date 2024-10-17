@@ -35,7 +35,6 @@ case $1 in
       <% if_p('coredns.config.main.path') do |val| %> -conf="<%= val %>"     <% end %> \
       <% if_p('coredns.v')                do |val| %> -v="<%= val %>"        <% end %> \
       <% if_p('coredns.vmodule')          do |val| %> -vmodule="<%= val %>"  <% end %> \
-      -log_dir "${LOG_DIR}" \
       >>  ${LOG_DIR}/coredns.stdout.log \
       2>> ${LOG_DIR}/coredns.stderr.log
     ;;
