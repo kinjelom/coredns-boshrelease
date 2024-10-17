@@ -1,12 +1,12 @@
 config/private.yml
 blobs
 temp
+.temp
 dev_releases
 releases/*.tgz
 releases/**/*.tgz
 .dev_builds
-.final_builds/jobs/**/*.tgz
-.final_builds/packages/**/*.tgz
+.final_builds
 .DS_Store
 .idea
 *.swp
@@ -20,3 +20,4 @@ terraform.tfstate*
 .terraform
 plan
 *-creds.yml
+prv-notes.md
