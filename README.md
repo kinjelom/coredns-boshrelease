@@ -59,7 +59,6 @@ update:
   value:
     name: demo.svc.yaml
     yaml:
-        zone: demo.svc
         resolvers:
           dns-c:
             urls: [ udp://1.1.1.1:53, udp://1.0.0.1:53 ]

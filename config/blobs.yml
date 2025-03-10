@@ -1,4 +1,4 @@
-coredns/coredns-1.11.3.src.tar.gz:
-  size: 653856
-  object_id: 601aeeb9-07eb-4010-7e55-0bc404de08d4
-  sha: sha256:b64e0c5970000595a0682e9a87ebbad5ef0db790c1b6efbba6e341211bdf3299
+coredns/coredns-1.12.0.src.tar.gz:
+  size: 666624
+  object_id: b3a032b7-ed5a-424a-5d1d-b85daa973626
+  sha: sha256:71a585f7d41cd07a0839788bd3bb17bcc26501711c857eeae7cae2f1f654eeac
