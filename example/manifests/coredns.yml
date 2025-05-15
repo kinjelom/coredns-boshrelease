@@ -23,9 +23,10 @@ instance_groups:
             blocks:
             - |+
               . {
+                errors
                 prometheus 0.0.0.0:{$PROMETHEUS_PORT}
                 log
-                errors
+                forward . 8.8.8.8 8.8.4.4
               }
 
 releases:

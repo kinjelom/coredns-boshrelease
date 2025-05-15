@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 function pid_is_running() {
   declare pid="$1"
@@ -70,6 +71,7 @@ function wait_pid_death() {
 #
 # @param pidfile
 # @param timeout [default 25s]
+# @param sigkill_on_timeout [default 1]
 #
 # For a pid found in :pidfile:, send a `kill -15` TERM, then wait for :timeout: seconds to
 # see if it dies on its own. If not, send it a `kill -9`. If the process does die,
@@ -84,7 +86,7 @@ function kill_and_wait() {
   declare pidfile="$1" timeout="${2:-25}" sigkill_on_timeout="${3:-1}"
 
   if [ ! -f "${pidfile}" ]; then
-    echo "Pidfile ${pidfile} doesn't exist"
+    echo "Pidfile ${pidfile} doesn't exist, nothing to stop"
     exit 0
   fi
 
@@ -92,23 +94,35 @@ function kill_and_wait() {
   pid=$(head -1 "${pidfile}")
 
   if [ -z "${pid}" ]; then
-    echo "Unable to get pid from ${pidfile}"
+    echo "Unable to read pid from ${pidfile}, aborting"
     exit 1
   fi
 
   if ! pid_is_running "${pid}"; then
-    echo "Process ${pid} is not running"
+    echo "Process ${pid} is not running, removing stale pidfile"
     rm -f "${pidfile}"
     exit 0
   fi
 
-  echo "Killing ${pidfile}: ${pid} "
+  echo "Sending SIGTERM to ${pidfile}: ${pid}"
   kill "${pid}"
 
-  if ! wait_pid_death "${pid}" "${timeout}"; then
+  if wait_pid_death "${pid}" "${timeout}"; then
+    echo "Graceful stop succeeded for pid ${pid}"
+    exit 0
+  else
+    echo "Graceful stop timed out after ${timeout}s"
     if [ "${sigkill_on_timeout}" = "1" ]; then
-      echo "Kill timed out, using kill -9 on ${pid}"
+      echo "Sending SIGKILL to ${pid}"
       kill -9 "${pid}"
+      # kill possible child processes
+      local children
+      children=$(pgrep -P "${pid}" || true)
+      if [ -n "${children}" ]; then
+        echo "Killing child processes of ${pid}: ${children}"
+        kill -9 "${children}"
+      fi
+      # brief pause for cleanup
       sleep 0.5
     fi
   fi
@@ -119,6 +133,23 @@ function kill_and_wait() {
   else
     echo "Stopped"
     rm -f "${pidfile}"
+    exit 0
+  fi
+}
+
+# ensure_not_running <pattern>
+# Searches for processes whose full command line matches <pattern>.
+# If any are found, prints an error with their PIDs and commands, then exits 1.
+function ensure_not_running() {
+  local pattern="$1"
+  # -f: match against full command line
+  # -a: show PID and full command
+  local procs
+  procs=$(pgrep -f -a -- "${pattern}" || true)
+  if [ -n "${procs}" ]; then
+    echo "Error: found running process(es) matching pattern '${pattern}':"
+    echo "${procs}"
+    exit 1
   fi
 }
 

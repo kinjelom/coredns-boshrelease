@@ -6,5 +6,5 @@ dependencies:
 
 files:
 - meta-info/blobs-versions.env
-- common/utils.sh
+- common/*
 - coredns/coredns-*.src.tar.gz

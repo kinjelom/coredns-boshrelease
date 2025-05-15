@@ -4,12 +4,12 @@
   path: /instance_groups/name=coredns/jobs/name=coredns/properties?/coredns?/config?/main?/blocks?/-
   value: |+
     demo.svc. {
+      errors
       recursor {
         external-yaml /var/vcap/jobs/coredns/conf/external/demo.svc.yaml
         verbose 1
       }
       log
-      errors
     }
 
 - type: replace
@@ -17,7 +17,6 @@
   value:
     name: demo.svc.yaml
     yaml:
-        zone: demo.svc
         resolvers:
           dns-c:
             urls: [ udp://1.1.1.1:53, udp://1.0.0.1:53 ]
@@ -40,4 +39,3 @@
           alias4:
             hosts: [ www.example.net ]
             ttl: 14
-

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-
-set -eu
+set -euo pipefail
 
 RUN_DIR=/var/vcap/sys/run/coredns
 LOG_DIR=/var/vcap/sys/log/coredns
@@ -10,7 +9,7 @@ mkdir -p ${RUN_DIR} ${LOG_DIR} ${TMP_DIR} ${STORE_DIR}
 
 PIDFILE=${RUN_DIR}/coredns.pid
 
-source /var/vcap/packages/coredns/common/utils.sh
+source /var/vcap/packages/coredns/common/pid_utils.sh
 
 exec 1>> ${LOG_DIR}/$(basename "$0").stdout.log
 exec 2>> ${LOG_DIR}/$(basename "$0").stderr.log
@@ -27,7 +26,8 @@ export <%= env["name"] %>=<%= env["value"] %>
 case $1 in
   start)
 
-    pid_guard ${PIDFILE} "coredns"
+    pid_guard "${PIDFILE}" "coredns"
+    ensure_not_running "coredns.*-pidfile ${PIDFILE}"
 
     exec coredns \
       -pidfile "${PIDFILE}" \
@@ -40,7 +40,9 @@ case $1 in
     ;;
 
   stop)
-    kill_and_wait ${PIDFILE}
+    kill_and_wait "${PIDFILE}"
+    ensure_not_running "coredns.*-pidfile ${PIDFILE}"
+    echo "All CoreDNS processes have been stopped."
     ;;
 
   *)
