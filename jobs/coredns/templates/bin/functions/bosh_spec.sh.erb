@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# STRUCTURAL INFO
+# https://bosh.io/docs/jobs/#properties-spec
+
+# spec.deployment: Name of the BOSH deployment defining the instance group.
+export BOSH_INSTANCE_DEPLOYMENT='<%= spec.deployment %>'
+# spec.name: Name of the instance group that the instance belongs to.
+export BOSH_INSTANCE_GROUP='<%= spec.name %>'
+# spec.az: The availability zone that the instance is placed into.
+export BOSH_INSTANCE_AZ='<%= spec.az %>'
+# spec.id: Unique and immutable UUID of the instance.
+export BOSH_INSTANCE_ID='<%= spec.id %>'
+# spec.index:
+#   Ordinal and numeric “human friendly” instance index.
+#   Indexes usually start a 0, but with no guarantee.
+#   Gaps may appear anywhere in the numbering, and the first instance in the group may have a non-zero index.
+#   With spec.index, Bosh doesn't guarantee that instances will be numbered consecutively.
+#   Determining which instance is the first its group is a very common requirement,
+#   so that certain things get bootstrapped by one single node of a cluster, like database schema migrations,
+#   or admin password enforcement. When facing such requirement, release authors should not assume there is necessarily
+#   an instance with index 0, and use spec.bootstrap instead.
+export BOSH_INSTANCE_INDEX='<%= spec.index.to_s %>'
+# spec.bootstrap: Boolean that is true if the instance is the first instance of its group.
+export BOSH_INSTANCE_BOOTSTRAP='<%= spec.bootstrap.to_s %>'
+
+# From within an ERB template, there is no programmatic way to know the name of the job that the template is defined in.
+# Thus release authors are forced to hardcode the job name in ERB templates that need it. Due to this limitation, there
+# is unfortunately no way to write ERB templates that are agnostic of the job name they belong to.
+
+## NETWORKING SETUP
+
+# spec.address: Default network address for the instance. This can be an IPv4, an IPv6 address or a DNS record,
+# depending on the Director's configuration. Available in bosh-release v255.4+.
+export BOSH_INSTANCE_ADDRESS='<%= spec.address %>'
+# spec.ip: IP address of the instance. In case multiple IP addresses are available, the IP of the addressable
+# or default network is used. Available in bosh-release v258+.
+export BOSH_INSTANCE_IP='<%= spec.ip %>'
+# Release authors are encouraged to favor spec.address over spec.ip. The spec.ip property is provided only
+# for use-cases where a numeric IP address (either IPv4 or IPv6) is absolutely required.
+# When dynamic networks are being used, spec.ip might not be available, then the value 127.0.0.1 is provided instead.
+# This applies to spec.<network-name>.ip, spec.<network-name>.netmask and spec.<network-name>.gateway.
+
+# spec.dns_domain_name: the configured root domain name for the Director, which defaults to bosh,
+# meaning that the configured Top-Level Domain (TLD) for Bosh DNS is .bosh.
+export BOSH_INSTANCE_DNS_DOMAIN_NAME='<%= spec.dns_domain_name %>'
+# spec.networks: Entire set of network information for the instance.
+export BOSH_INSTANCE_NETWORKS_YAML
+BOSH_INSTANCE_NETWORKS_YAML=$(cat <<'EOF'
+<%= spec.networks.to_yaml %>
+EOF
+)
+
+## INSTANCE CONFIGURATION
+# spec.persistent_disk: is 0 if no persistent disk is mounted to the instance. In case the deployment manifest
+export BOSH_INSTANCE_PERSISTENT_DISK='<%= spec.persistent_disk.to_s %>'
+# does declare a persistent disk attached to the instances of the group, this persistent_disk is given a 0 value
+# when the deployment manifests instructs to remove the instance from the group and delete it
+# (typical for scaled-in operations, as opposed to scale-out where new instances are “horizontally” added to a group).
+# spec.release.name: The name of the BOSH Release where the instance job is originally defined.
+export BOSH_INSTANCE_RELEASE_NAME='<%= spec.release.name %>'
+# spec.release.version: Version of the BOSH release that the instance job relies on.
+export BOSH_INSTANCE_RELEASE_VERSION='<%= spec.release.version %>'
+
+function print_bosh_spec() {
+  echo "Bootstrap: $BOSH_INSTANCE_BOOTSTRAP"
+  echo "Instance-Id: $BOSH_INSTANCE_ID"
+  echo "Instance-Index: $BOSH_INSTANCE_INDEX"
+  echo "IP: $BOSH_INSTANCE_IP"
+  echo "Address: $BOSH_INSTANCE_ADDRESS"
+  echo "AZ: $BOSH_INSTANCE_AZ"
+  echo "Deployment: $BOSH_INSTANCE_DEPLOYMENT"
+  echo "Instance-Group: $BOSH_INSTANCE_GROUP"
+  echo "Release: $BOSH_INSTANCE_RELEASE_NAME/$BOSH_INSTANCE_RELEASE_VERSION"
+}

@@ -1,0 +1,6 @@
+---
+name: check-coredns
+
+templates:
+  bin/run: bin/run
+

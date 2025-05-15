@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+LOG_DIR=/var/vcap/sys/log/coredns
+mkdir -p "$LOG_DIR"
+chown vcap:vcap -R "$LOG_DIR"
+
+SCRIPT_NAME=$(basename "$0")
+exec 1>> "${LOG_DIR}/${SCRIPT_NAME}.stdout.log"
+exec 2>> "${LOG_DIR}/${SCRIPT_NAME}.stderr.log"
+source /var/vcap/packages/common/script_utils.sh
+
+log_info "--- ${SCRIPT_NAME} begin"
+
+<%- if p("coredns.config.verify_control_serial_post_start") -%>
+
+
+source /var/vcap/jobs/coredns/bin/functions/serial.sh
+# Obtain the expected serial from the zone definition
+expected_serial=$(extract_serial_txt_from_zone_def)
+# Query the TXT record from the local CoreDNS instance
+got_serial=$(query_serial_txt_from_local_dns)
+# Compare and log result
+if [[ "$expected_serial" == "$got_serial" ]]; then
+  log_info "Serial OK: expected='$expected_serial' matches got='$got_serial'"
+else
+  log_error "ERROR: Serial mismatch – expected='$expected_serial', got='$got_serial'" >&2
+  exit 1
+fi
+
+<%- end -%>

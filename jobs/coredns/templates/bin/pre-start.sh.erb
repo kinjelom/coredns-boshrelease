@@ -1,8 +1,17 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-# create additional-config root-dir
-ROOT_DIR="<%= p('coredns.config.external.directory','/var/vcap/jobs/coredns/conf/external') %>"
-/bin/mkdir -p $ROOT_DIR
+LOG_DIR=/var/vcap/sys/log/coredns
+ROOT_DIR="<%= p('coredns.config.external.directory') %>"
+mkdir -p "$LOG_DIR" "$ROOT_DIR"
+chown vcap:vcap -R "$LOG_DIR" "$ROOT_DIR"
+
+SCRIPT_NAME=$(basename "$0")
+exec 1>> "${LOG_DIR}/${SCRIPT_NAME}.stdout.log"
+exec 2>> "${LOG_DIR}/${SCRIPT_NAME}.stderr.log"
+source /var/vcap/packages/common/script_utils.sh
+
+log_info "--- ${SCRIPT_NAME} begin"
 
 # files:
 <%
@@ -20,3 +29,5 @@ EOF
 <% end %>
 
 <% end %>
+
+log_info "--- ${SCRIPT_NAME} success"

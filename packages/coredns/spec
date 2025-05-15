@@ -2,9 +2,8 @@
 name: coredns
 
 dependencies:
-- golang-1.23-linux
+- golang-1.24-linux
 
 files:
 - meta-info/blobs-versions.env
-- common/*
 - coredns/coredns-*.src.tar.gz

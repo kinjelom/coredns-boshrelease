@@ -6,7 +6,7 @@
     demo.svc. {
       errors
       recursor {
-        external-yaml /var/vcap/jobs/coredns/conf/external/demo.svc.yaml
+        external-yaml /var/vcap/jobs/coredns/config/external/demo.svc.yaml
         verbose 1
       }
       log

@@ -3,30 +3,38 @@ name: coredns
 
 templates:
   bin/pre-start.sh.erb: bin/pre-start
-  bin/coredns_ctl.erb: bin/coredns_ctl
-  conf/Corefile.erb: conf/Corefile
+  bin/post-start.sh.erb: bin/post-start
+  bin/functions/bosh_spec.sh.erb: bin/functions/bosh_spec.sh
+  bin/functions/serial.sh.erb: bin/functions/serial.sh
+
+  config/bpm.yml.erb: config/bpm.yml
+  config/Corefile.erb: config/Corefile
+  config/ctrl.zone-def.erb: config/ctrl.zone-def
 
 packages:
 - coredns
+- common
 
 properties:
-  coredns.dns-port:
-    description: "DNS main port (used as health-check)"
+  coredns.dns_port:
+    description: "Coredns default port"
     default: "1053"
-  coredns.v:
-    description: "log level for V logs"
-  coredns.vmodule:
-    description: "comma-separated list of pattern=N settings for file-filtered logging"
 
   coredns.env:
-    description: "Enviroment variables"
+    description: "Enviroment variables map"
     default:
-      - name: PROMETHEUS_PORT
-        value: 9153
+      PROMETHEUS_PORT: 9153
 
   coredns.config.main.path:
     description: "Corefile path to load"
-    default: "/var/vcap/jobs/coredns/conf/Corefile"
+    default: "/var/vcap/jobs/coredns/config/Corefile"
+
+  coredns.config.verify_control_serial_post_start:
+    description: >
+      When true, the post-start hook will compare the control serial TXT record
+      returned by CoreDNS against the configured value and return an error if they differ.
+    default: true
+
   coredns.config.main.blocks:
     description: "Corefile content named blocks"
     default:
@@ -39,7 +47,8 @@ properties:
 
   coredns.config.external.directory:
     description: "External config dir to create"
-    default: "/var/vcap/jobs/coredns/conf/external"
+    default: "/var/vcap/jobs/coredns/config/external"
+
   coredns.config.external.files:
     description: "External config files to create"
     default: []

@@ -1,0 +1,13 @@
+# extract_serial_txt_from_zone_def
+# Reads the zone def file, finds the line beginning with 'serial TXT "..."',
+# and prints the text between the quotes.
+function extract_serial_txt_from_zone_def() {
+  sed -n 's/^serial TXT "\([^"]*\)".*/\1/p' /var/vcap/jobs/coredns/config/ctrl.zone-def
+}
+
+
+# query_serial_txt_from_local_dns
+# shellcheck disable=SC1073
+function query_serial_txt_from_local_dns() {
+  dig @127.0.0.1 -p <%= p('coredns.dns_port') %> TXT serial.ctrl.localhost +short | tr -d '"'
+}

@@ -1,0 +1,14 @@
+<%-
+  serial_val=Time.now.utc.to_i
+-%>
+$TTL 0
+@   IN SOA  ns.ctrl.localhost. hostmaster.ctrl.localhost. (
+        <%= serial_val %> ; serial
+        60         ; refresh (seconds)
+        10         ; retry
+        604800     ; expire
+        0          ; minimum
+)
+    IN NS   ns.ctrl.localhost.
+ns  IN A    127.0.0.1
+serial TXT "<%= serial_val %>"

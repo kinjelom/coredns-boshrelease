@@ -1,0 +1,12 @@
+processes:
+  - name: coredns
+    executable: /var/vcap/packages/coredns/bin/coredns
+    args:
+      - -conf
+      - <%= p('coredns.config.main.path') %>
+      - -dns.port
+      - <%= p('coredns.dns_port') %>
+    env:
+    <%- p("coredns.env", {}).each do |key, val| -%>
+      <%= key %>: <%= val %>
+    <%- end -%>

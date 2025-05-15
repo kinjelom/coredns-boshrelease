@@ -9,17 +9,18 @@ instance_groups:
   stemcell: default
   networks: [name: default]
   jobs:
+  - name: bpm
+    release: bpm
   - name: coredns
     release: coredns
     properties:
       coredns:
         dns-port: 1053
         env:
-        - name: PROMETHEUS_PORT
-          value: 9153
+          PROMETHEUS_PORT: 9153
         config:
           main:
-            path: "/var/vcap/jobs/coredns/conf/Corefile"
+            path: "/var/vcap/jobs/coredns/config/Corefile"
             blocks:
             - |+
               . {
@@ -31,6 +32,8 @@ instance_groups:
 
 releases:
 - name: coredns
+  version: latest
+- name: bpm
   version: latest
 
 stemcells:
