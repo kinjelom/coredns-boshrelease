@@ -13,7 +13,6 @@ bosh create-release --version="$REL_VERSION" $REL_FLAGS --name="$REL_NAME" --tar
 echo "Release created: ${REL_TARBALL_PATH}"
 
 SHA1=($(sha1sum "$REL_TARBALL_PATH"))
-TARBALL_URL="https://github.com/kinjelom/coredns-boshrelease/releases/download/v$REL_VERSION/$REL_TARBALL"
 
 set -
 
@@ -23,13 +22,13 @@ echo 'You can reference this release in your deployment manifest from the `relea
 echo '```yaml'
 echo "- name: \"$REL_NAME\""
 echo "  version: \"$REL_VERSION\""
-echo "  url: \"$TARBALL_URL\""
+echo "  url: \"$DOWNLOAD_URL\""
 echo "  sha1: \"$SHA1\""
 echo '```'
 echo 'Or upload it to your director with the `upload-release` command:'
 echo '```'
 echo "bosh upload-release --sha1 $SHA1 \\"
-echo "  $TARBALL_URL"
+echo "  $DOWNLOAD_URL"
 echo '```'
 echo " "
 

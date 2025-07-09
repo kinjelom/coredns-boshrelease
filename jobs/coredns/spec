@@ -21,7 +21,7 @@ properties:
     default: "1053"
 
   coredns.env:
-    description: "Enviroment variables map"
+    description: "Environment variables map"
     default:
       PROMETHEUS_PORT: 9153
 
@@ -69,3 +69,13 @@ properties:
           3600 IN NS a.iana-servers.net.
           3600 IN NS b.iana-servers.net.
           local IN A 127.0.0.1
+
+  coredns.monit.additional_entries:
+    description: Additional Monit process configuration (cycle = 10s), using Monit v5.2.5 syntax https://gist.github.com/oppegard/46dfa1e40b46aff1fa73c81b10341cab
+    default: []
+    example:
+      - "if cpu > 95% for 10 cycles then restart"
+      - "if totalcpu > 95% for 10 cycles then restart"
+      - "if memory > 95% for 10 cycles then restart"
+      - "if totalmemory > 95% for 10 cycles then restart"
+      - "if loadavg(1min) > 1 for 10 cycles then restart"

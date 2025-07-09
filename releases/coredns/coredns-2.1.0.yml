@@ -1,0 +1,34 @@
+name: coredns
+version: 2.1.0
+commit_hash: 717dbc3
+uncommitted_changes: false
+jobs:
+- name: check-coredns
+  version: 26f6bb71f68daf8a0ae7eee297f062652dfb48367bc5c9381b2275a75e4b57f2
+  fingerprint: 26f6bb71f68daf8a0ae7eee297f062652dfb48367bc5c9381b2275a75e4b57f2
+  sha1: sha256:fc619a01fb4b5bfa2a8173acbe5e291d77eeecb8b9b7acada2b89895300e6b9c
+  packages: []
+- name: coredns
+  version: 103a360fae1169cd55f61bda9ab749dd7b1c475d09bb1e5db019a28a9c091319
+  fingerprint: 103a360fae1169cd55f61bda9ab749dd7b1c475d09bb1e5db019a28a9c091319
+  sha1: sha256:811fd7ca256f8934a527b62c0a031b0ca73a4932b4b6e5ee1f1935bd158e8c71
+  packages:
+  - coredns
+  - common
+packages:
+- name: common
+  version: aede33230ce40be193ad992ba007290570178383c0874728ca6444279dcbbfdd
+  fingerprint: aede33230ce40be193ad992ba007290570178383c0874728ca6444279dcbbfdd
+  sha1: sha256:669ebbb7170082c0f35c6640eaf11df49577235baaf49def032872a69aa1996b
+  dependencies: []
+- name: coredns
+  version: 6f1ee66d4e01f7c01c04b654e84dc5f701d0246d742695f23fbe243ca9b828c9
+  fingerprint: 6f1ee66d4e01f7c01c04b654e84dc5f701d0246d742695f23fbe243ca9b828c9
+  sha1: sha256:1797b5e248c9bfa8ebbfb66fde9a99f05e096096efb69f02a93e189135242730
+  dependencies:
+  - golang-1.23-linux
+- name: golang-1.23-linux
+  version: 0318ed53dd7c034bd98549c09ba9cb470ce90c50431ad61d51f355fa9afff2e8
+  fingerprint: 0318ed53dd7c034bd98549c09ba9cb470ce90c50431ad61d51f355fa9afff2e8
+  sha1: sha256:c47cbcd9e2823261b063b983f4615f7cbe1f8109b91e6f1c6b23262b215d6a73
+  dependencies: []

@@ -1,9 +1,9 @@
 # monit 5.2.5 https://gist.github.com/oppegard/46dfa1e40b46aff1fa73c81b10341cab
-
 check process coredns
   with pidfile /var/vcap/sys/run/bpm/coredns/coredns.pid
   start program "/var/vcap/jobs/bpm/bin/bpm start coredns"
   stop program "/var/vcap/jobs/bpm/bin/bpm stop coredns"
+  <%- p('coredns.monit.additional_entries').each do |entry| -%>
+  <%= entry %>
+  <%- end -%>
   group vcap
-
-
