@@ -933,36 +933,34 @@ Some resource tests can be used inside a check **system** entry, some in a check
 
 - **System only resource tests**
 
-  |Resource|Description|
-          |--------|-----------|
-  | `CPU([user\|system\|wait])` | is the percent of time the system spend in user or system/kernel space. Some systems such as linux 2.6 supports a 'wait' indicator as well.|
-  | `SWAP` |is the swap usage of the system in either percent (of the systems total) or as an amount (Byte, kB, MB, GB).|
+  | Resource                    | Description                                                                                                                                 |
+  |-----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+  | `CPU([user\|system\|wait])` | is the percent of time the system spend in user or system/kernel space. Some systems such as linux 2.6 supports a 'wait' indicator as well. |
+  | `SWAP`                      | is the swap usage of the system in either percent (of the systems total) or as an amount (Byte, kB, MB, GB).                                |
 
 - **Process only resource tests**
 
-  |Resource|Description|
-          |--------|-----------|
-  |`CPU` | is the CPU usage of the process itself (percent).|
-  |`TOTALCPU` | is the total CPU usage of the process and its children in (percent). You will want to use TOTALCPU typically for services like Apache webserver where one master process forks the child processes as workers.|
-  |`CHILDREN` | is the number of child processes of the process.|
-  |`TOTALMEMORY` | is the memory usage of the process and its child processes in either percent or as an amount (Byte, kB, MB, GB).|
+  | Resource      | Description                                                                                                                                                                                                      |
+  |---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+  | `CPU`         | is the CPU usage of the process itself (percent).                                                                                                                                                                |
+  | `TOTALCPU`    | is the total CPU usage of the process and its children in (percent). You will want to use `TOTALCPU` typically for services like Apache webserver where one master process forks the child processes as workers. |
+  | `CHILDREN`    | is the number of child processes of the process.                                                                                                                                                                 |
+  | `TOTALMEMORY` | is the memory usage of the process and its child processes in either percent or as an amount (Byte, kB, MB, GB).                                                                                                 |
 
 - **System and process resource tests**
 
-  |Resource|Description|
-          |--------|-----------|
-  | `MEMORY` | is the memory usage of the system or of a process (without children) in either percent (of the systems total) or as an amount (Byte, kB, MB, GB).|
-  | `LOADAVG([1min\|5min\|15min])` | refers to the system's load average.  The load average is the number of processes in the system run queue, averaged over the specified time period.|
+  | Resource                       | Description                                                                                                                                         |
+  |--------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+  | `MEMORY`                       | is the memory usage of the system or of a process (without children) in either percent (of the systems total) or as an amount (Byte, kB, MB, GB).   |
+  | `LOADAVG([1min\|5min\|15min])` | refers to the system's load average.  The load average is the number of processes in the system run queue, averaged over the specified time period. |
 
-**Operator** is a choice of `<`, `>`, `!=`, `==` in C notation, `gt`, `lt`, `eq`, `ne` in shell sh notation and
-`greater`, `less`, `equal`, `notequal` in human readable form (if not specified, default is `EQUAL`).
+The **operator** is a choice of `<`, `>`, `!=`, `==` in C notation, `gt`, `lt`, `eq`, `ne` in shell sh notation and
+  `greater`, `less`, `equal`, `notequal` in human-readable form (if not specified, default is `EQUAL`).
 
-**Value** is either an integer or a real number (except for `CHILDREN`). For `CPU`, `TOTALCPU`, `MEMORY` and
-`TOTALMEMORY` you need
-to specify a unit. This could be `%` or if applicable `B` (Byte), `kB` (1024 Byte), `MB` (1024 KiloByte) or `GB` (1024
-MegaByte).
+The **value** is either an integer or a real number (except for `CHILDREN`). For `CPU`, `TOTALCPU`, `MEMORY` and
+  `TOTALMEMORY` you need to specify a unit. This could be `%` or if applicable `B` (Byte), `kB` (1024 Byte), `MB` (1024 KiloByte) or `GB` (1024 MegaByte).
 
-**Action** is a choice of "ALERT", "RESTART", "START", "STOP", "EXEC" or "UNMONITOR".
+The **action** is a choice of `ALERT`, `RESTART`, `START`, `STOP`, `EXEC` or `UNMONITOR`.
 
 To calculate the **cycles**, a counter is raised whenever the expression above is true and it is lowered whenever it is
 false (but not below 0). All counters are reset in case of a restart.
@@ -1472,7 +1470,7 @@ not accepted or if there is a problem with socket i/o, Monit will assume that so
 specified action. If Monit is compiled with openssl, then ssl based network services can also be tested.
 
 The full syntax for the statement used for connection testing is as follows (keywords are in capital and optional
-statements in [brackets]),
+statements in `[brackets]`),
 
 ```conf
 IF FAILED [host] port [type] [protocol|{send/expect}+] [timeout] [[<X>] <Y> CYCLES] THEN action [ELSE IF SUCCEEDED [[<X>] <Y> CYCLES] THEN action]
