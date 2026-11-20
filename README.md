@@ -1,23 +1,35 @@
-## Coredns BOSH Release
+## CoreDNS BOSH Release
 
-Bosh release of [CoreDNS](https://coredns.io/) with [recursor plugin](https://github.com/kinjelom/coredns-recursor)
+BOSH release packaging [CoreDNS](https://coredns.io/) compiled with the
+[`recursor` plugin](https://github.com/kinjelom/coredns-recursor).
+Component versions are listed in [`src/meta-info/blobs-versions.env`](src/meta-info/blobs-versions.env).
 
-The CoreDNS process is managed by BPM to ensure better lifecycle handling, stability, and upgrade reliability. 
-To enable this, the release includes a BPM job that should be referenced in the deployment manifests.
+This repository covers only the BOSH side: packaging, job templates, lifecycle and configuration delivery.
+For what the `recursor` plugin does and how to configure it (resolvers, aliases, syntax, use case),
+see the [plugin documentation](https://github.com/kinjelom/coredns-recursor#readme).
 
-A dedicated control zone is used to verify that the DNS server has successfully loaded the latest configuration.
-During template rendering, a serial number is generated based on the current date and time. 
-In the `post-start` script, this serial is queried from the DNS server and compared with the expected value. 
-This mechanism ensures that the new configuration is active.
+### Jobs
 
-You can disable this verification using the following property: `coredns.config.verify_control_serial_post_start: false`
+- `coredns` - runs the CoreDNS server under [BPM](https://github.com/cloudfoundry/bpm-release)
+  (the `bpm` job must be colocated in the deployment manifest).
+- `check-coredns` - errand that verifies the running server returns the control serial
+  stored in the rendered configuration; it can be run at any time.
 
-A run-errand named `check-coredns` is provided and can be executed at any time to verify 
-that the DNS server returns the expected serial number stored in the rendered configuration. 
+### Configuration
 
-### Use Case
+- `coredns.config.main.blocks` - list of Corefile server blocks rendered into the main `Corefile`.
+- `coredns.config.external.files` - additional files (`yaml` or `text`) written to
+  `coredns.config.external.directory`, e.g. external `recursor` configs or zone files referenced from the blocks.
+- `coredns.dns_port`, `coredns.env`, `coredns.monit.additional_entries` - see [`jobs/coredns/spec`](jobs/coredns/spec).
 
-![](docs/flow.png)
+### Configuration verification
+
+A dedicated control zone is used to verify that the DNS server has loaded the latest configuration.
+During template rendering, a serial number is generated from the current date and time.
+The `post-start` script queries this serial from the DNS server and compares it with the expected value,
+which ensures the new configuration is active.
+
+You can disable this check with: `coredns.config.verify_control_serial_post_start: false`
 
 ### Deployment
 ```yaml
@@ -57,6 +69,10 @@ update:
 
 ```
 
+The ops file below only shows how to wire a `recursor` block and its external YAML config into the job properties
+(full example: [`example/manifests/ops/ops-demo.yml`](example/manifests/ops/ops-demo.yml)).
+For the meaning of the `recursor` options, refer to the [plugin documentation](https://github.com/kinjelom/coredns-recursor#readme).
+
 ```yaml
 ---
 - type: replace
@@ -79,28 +95,10 @@ update:
       resolvers:
         dns-c:
           urls: [ udp://1.1.1.1:53, udp://1.0.0.1:53 ]
-          timeout_ms: 500
-        dns-g:
-          urls: [ udp://8.8.8.8:53, udp://8.8.4.4:53 ]
-        demo:
-          urls: [ udp://10.0.0.1:53 ]
       aliases:
-        alias1:
-          hosts: [ www.example.org, www.example.com ]
-          resolver_name: dns-c
-          ttl: 11
-        alias2:
-          ips: [ 10.0.0.1, 10.0.0.2 ]
-          ttl: 12
-        alias3:
-          ips: [ 10.0.0.1, 10.0.0.2 ]
-          hosts: [ www.example.net ]
-          resolver_name: dns-g
-          ttl: 13
-        alias4:
-          hosts: [ www.example.net ]
-          ttl: 14
+        "*-lb":
+          ips: [ 10.0.0.50, 10.0.0.51 ]
         "*":
-          resolver_name: demo
+          resolver_name: dns-c
           ttl: 15
 ```

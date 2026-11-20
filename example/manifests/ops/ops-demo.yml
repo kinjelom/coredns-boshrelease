@@ -41,6 +41,9 @@
         alias4:
           hosts: [ www.example.net ]
           ttl: 14
+        "*-lb":
+          ips: [ 10.0.0.50, 10.0.0.51 ]
+          ttl: 30
         "*":
           resolver_name: demo
           ttl: 15
